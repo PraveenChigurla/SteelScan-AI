@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steel Plate Faults Predictor</title>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js for Interactive Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Vanilla CSS for maximum styling control -->
+    <style>
+        :root {
+            --bg-color: #0d0e15;
+            --card-bg: rgba(22, 24, 38, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary: #5271ff;
+            --primary-glow: rgba(82, 113, 255, 0.4);
+            --accent-cyan: #00f2fe;
+            --accent-purple: #9b51e0;
+            --accent-green: #00e676;
+            --accent-red: #ff3860;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --font-family-title: 'Outfit', 'Inter', sans-serif;
+            --font-family-body: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: all 0.2s ease-in-out;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(82, 113, 255, 0.1) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(155, 81, 224, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: var(--font-family-body);
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+        }
+
+        header {
+            max-width: 1400px;
+            margin: 0 auto 2.5rem auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-family: var(--font-family-title);
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, var(--accent-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .version-badge {
+            background: rgba(82, 113, 255, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--accent-cyan);
+            padding: 0.3rem 0.8rem;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-family: var(--font-family-title);
+            font-weight: 600;
+            box-shadow: 0 0 15px rgba(82, 113, 255, 0.2);
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 1100px) {
+            main {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.8rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(82, 113, 255, 0.05);
+        }
+
+        .card-title {
+            font-family: var(--font-family-title);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #ffffff;
+        }
+
+        /* Metrics grid */
+        .metrics-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-mini-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .metric-mini-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .metric-val {
+            font-family: var(--font-family-title);
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-top: 0.4rem;
+            background: linear-gradient(135deg, #fff, #bbb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-val.cyan {
+            background: linear-gradient(135deg, #fff, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-val.purple {
+            background: linear-gradient(135deg, #fff, var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-val.green {
+            background: linear-gradient(135deg, #fff, var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Tab Layout */
+        .tabs-header {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 0.8rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-family-title);
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .tab-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: #ffffff;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Navigation sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-menu-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            padding: 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .sidebar-menu-btn:hover, .sidebar-menu-btn.active {
+            background: rgba(82, 113, 255, 0.08);
+            border-color: var(--primary);
+        }
+
+        .sidebar-menu-btn.active h4 {
+            color: var(--accent-cyan);
+        }
+
+        .sidebar-menu-btn h4 {
+            font-family: var(--font-family-title);
+            font-weight: 600;
+            font-size: 1rem;
+            color: #ffffff;
+        }
+
+        .sidebar-menu-btn p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        /* Grid inputs */
+        .features-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        input[type="number"], select {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: #ffffff;
+            padding: 0.6rem 0.8rem;
+            font-family: var(--font-family-body);
+            font-size: 0.85rem;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(82, 113, 255, 0.3);
+        }
+
+        .form-actions {
+            margin-top: 1.8rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn {
+            font-family: var(--font-family-title);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.7rem 1.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(82, 113, 255, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* Interactive Prediction Panel */
+        .prediction-result-panel {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .prediction-outcome {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .outcome-lbl {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .outcome-val {
+            font-family: var(--font-family-title);
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            text-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+        }
+
+        /* Probabilities bars */
+        .prob-bar-container {
+            margin-bottom: 0.8rem;
+        }
+
+        .prob-bar-lbl {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .prob-bar-track {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .prob-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--accent-cyan));
+        }
+
+        /* Drag and Drop Batch Area */
+        .dropzone {
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 3rem 1.5rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.01);
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+        }
+
+        .dropzone:hover {
+            border-color: var(--primary);
+            background: rgba(82, 113, 255, 0.03);
+        }
+
+        .dropzone-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+        }
+
+        .dropzone h4 {
+            font-family: var(--font-family-title);
+            font-size: 1.1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .dropzone p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Matrix style confusion matrix */
+        .confusion-matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            margin-top: 1rem;
+            overflow-x: auto;
+        }
+
+        .matrix-header-cell {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 4px;
+            text-transform: uppercase;
+        }
+
+        .matrix-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .matrix-side-header {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 6px;
+        }
+
+        /* Batch table */
+        .table-container {
+            max-height: 400px;
+            overflow: auto;
+            width: 100%;
+            margin-top: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.8rem;
+        }
+
+        th {
+            background: rgba(0, 0, 0, 0.4);
+            font-family: var(--font-family-title);
+            font-weight: 600;
+            padding: 0.8rem;
+            color: #ffffff;
+            position: sticky;
+            top: 0;
+            border-bottom: 2px solid var(--card-border);
+        }
+
+        td {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--card-border);
+            color: var(--text-main);
+        }
+
+        tr:nth-child(even) td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .badge-success {
+            background: rgba(0, 230, 118, 0.15);
+            color: var(--accent-green);
+        }
+
+        .badge-error {
+            background: rgba(255, 56, 96, 0.15);
+            color: var(--accent-red);
+        }
+
+        .flex-row-spaced {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Sample data loader helper */
+        .sample-loader {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+            font-size: 0.8rem;
+        }
+
+        .sample-btn {
+            background: rgba(82, 113, 255, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(82, 113, 255, 0.2);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .sample-btn:hover {
+            background: rgba(82, 113, 255, 0.2);
+        }
+
+        /* Modern Custom Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(82, 113, 255, 0.35);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(82, 113, 255, 0.6);
+        }
+        
+        /* Force styling inside scrollable container */
+        .table-container::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1>Steel Plate Fault Classifier</h1>
+            <div class="subtitle">LightGBM Real-time Inference and Diagnostics Dashboard</div>
+        </div>
+        <div class="version-badge">Base Model v1.0.0</div>
+    </header>
+
+    <main>
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-menu-btn active" onclick="switchMainTab('dashboard')">
+                <div style="font-size: 1.8rem; color: var(--primary);">📊</div>
+                <div>
+                    <h4>Model Performance</h4>
+                    <p>Metrics, validation and diagnostics</p>
+                </div>
+            </div>
+            <div class="sidebar-menu-btn" onclick="switchMainTab('predict-single')">
+                <div style="font-size: 1.8rem; color: var(--accent-cyan);">🎛️</div>
+                <div>
+                    <h4>Single Inference</h4>
+                    <p>Predict single steel plate record</p>
+                </div>
+            </div>
+            <div class="sidebar-menu-btn" onclick="switchMainTab('predict-batch')">
+                <div style="font-size: 1.8rem; color: var(--accent-purple);">📁</div>
+                <div>
+                    <h4>Batch Processing</h4>
+                    <p>Upload CSV and process batch data</p>
+                </div>
+            </div>
+
+            <!-- Mini stats card -->
+            <div class="glass-card" style="padding: 1.2rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Unseen Dataset Accuracy</span>
+                        <span style="font-size: 0.8rem; font-weight: bold; color: var(--accent-green);" id="unseen-acc-sidebar">83.55%</span>
+                    </div>
+                    <div style="height: 4px; background: rgba(255,255,255,0.05); border-radius: 99px; overflow: hidden;">
+                        <div style="width: 83.55%; height: 100%; background: var(--accent-green);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="glass-card" style="min-height: 500px;">
+            
+            <!-- Tab: Dashboard / Performance -->
+            <div id="tab-dashboard" class="tab-content active">
+                <h3 class="card-title">Model Performance Summary</h3>
+                
+                <div class="metrics-summary-grid">
+                    <div class="metric-mini-card">
+                        <div class="metric-label">Train Accuracy</div>
+                        <div class="metric-val" id="val-train-acc">0.00%</div>
+                    </div>
+                    <div class="metric-mini-card">
+                        <div class="metric-label">Test Accuracy</div>
+                        <div class="metric-val cyan" id="val-test-acc">0.00%</div>
+                    </div>
+                    <div class="metric-mini-card">
+                        <div class="metric-label">CV Score (Mean ± SD)</div>
+                        <div class="metric-val purple" id="val-cv-score" style="font-size: 1.3rem;">0.00%</div>
+                    </div>
+                    <div class="metric-mini-card">
+                        <div class="metric-label">Unseen Data Accuracy</div>
+                        <div class="metric-val green" id="val-unseen-acc">0.00%</div>
+                    </div>
+                </div>
+
+                <div class="tabs-header">
+                    <button class="tab-btn active" onclick="switchPerformanceTab(event, 'perf-classification-report')">Classification Report</button>
+                    <button class="tab-btn" onclick="switchPerformanceTab(event, 'perf-confusion-matrix')">Confusion Matrix</button>
+                </div>
+
+                <!-- Classification Report Tab Content -->
+                <div id="perf-classification-report" class="perf-tab-content" style="display: block;">
+                    <div class="table-container" style="max-height: none;">
+                        <table id="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Fault Class</th>
+                                    <th>Precision</th>
+                                    <th>Recall</th>
+                                    <th>F1-Score</th>
+                                    <th>Support</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Confusion Matrix Tab Content -->
+                <div id="perf-confusion-matrix" class="perf-tab-content" style="display: none;">
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Values show counts of test samples predicted (columns) vs actual classes (rows).</p>
+                    <div class="confusion-matrix-grid" id="confusion-matrix-grid">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Single Inference -->
+            <div id="tab-predict-single" class="tab-content">
+                <div class="flex-row-spaced" style="margin-bottom: 1.2rem;">
+                    <h3 class="card-title" style="margin-bottom: 0;">Interactive Predictor</h3>
+                    <div class="sample-loader">
+                        <span>Load Sample:</span>
+                        <button class="sample-btn" onclick="loadSample(0)">Sample 1 (Other_Faults)</button>
+                        <button class="sample-btn" onclick="loadSample(1)">Sample 2 (Dirtiness)</button>
+                        <button class="sample-btn" onclick="loadSample(2)">Sample 3 (Bumps)</button>
+                    </div>
+                </div>
+
+                <form id="single-pred-form" onsubmit="handleSinglePredict(event)">
+                    <div class="features-form" id="features-form-container">
+                        <!-- Inputs dynamically generated -->
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset Values</button>
+                        <button type="submit" class="btn btn-primary">Run Inference</button>
+                    </div>
+                </form>
+
+                <!-- Prediction Results -->
+                <div class="prediction-result-panel" id="prediction-result-panel">
+                    <div class="prediction-outcome">
+                        <div>
+                            <span class="outcome-lbl">Predicted Fault Type</span>
+                            <div class="outcome-val" id="outcome-label">-</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="outcome-lbl">Confidence Score</span>
+                            <div class="outcome-val" id="outcome-confidence" style="color: var(--accent-green); text-shadow: 0 0 15px rgba(0,230,118,0.4);">-</div>
+                        </div>
+                    </div>
+                    <h4 style="font-size: 0.9rem; margin-bottom: 0.8rem; font-family: var(--font-family-title);">Probability Distribution</h4>
+                    <div id="probability-distribution-bars">
+                        <!-- Bars dynamically loaded -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Batch Processing -->
+            <div id="tab-predict-batch" class="tab-content">
+                <h3 class="card-title">Batch Processing</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                    Upload a CSV file containing the features to generate predictions. If the CSV contains a `Target_Label` column, accuracy metrics will be evaluated.
+                </p>
+
+                <div class="dropzone" onclick="document.getElementById('csv-file-input').click()" id="drop-zone">
+                    <div class="dropzone-icon">📥</div>
+                    <h4>Drag & Drop CSV file here</h4>
+                    <p>or click to browse from your machine</p>
+                    <input type="file" id="csv-file-input" accept=".csv" style="display: none;" onchange="handleBatchFileSelect(event)">
+                </div>
+
+                <!-- Batch Results summary -->
+                <div id="batch-results-summary" style="display: none;">
+                    <div class="flex-row-spaced" style="margin-bottom: 1rem;">
+                        <h4 class="card-title" style="margin-bottom: 0;">Inference Results (<span id="batch-count">0</span> records)</h4>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary" onclick="exportBatchCSV()" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Export predicted CSV</button>
+                        </div>
+                    </div>
+                    
+                    <div id="batch-stats-box" style="margin-bottom: 1.2rem; display: none;" class="glass-card">
+                        <div class="flex-row-spaced">
+                            <span style="font-size: 0.9rem;">Batch Accuracy:</span>
+                            <span style="font-size: 1.1rem; font-weight: bold; color: var(--accent-green);" id="batch-accuracy-val">100.00%</span>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="batch-results-table">
+                            <thead>
+                                <!-- Filled dynamically by JS -->
+                            </thead>
+                            <tbody>
+                                <!-- Filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Global variables
+        let metrics = {};
+        let featureNames = [];
+        let classNames = [];
+        let batchResults = [];
+
+        // Sample Data Records (Extracted from unseen test dataset for test prediction)
+        const sampleRecords = [
+            {
+                "X_Minimum": 833, "X_Maximum": 856, "Y_Minimum": 937709, "Y_Maximum": 937842, "Pixels_Areas": 1058,
+                "X_Perimeter": 142, "Y_Perimeter": 151, "Sum_of_Luminosity": 132331, "Minimum_of_Luminosity": 112,
+                "Maximum_of_Luminosity": 143, "Length_of_Conveyer": 1396, "TypeOfSteel_A300": 0,
+                "TypeOfSteel_A400": 1, "Steel_Plate_Thickness": 220, "Edges_Index": 0.7736, "Empty_Index": 0.6541,
+                "Square_Index": 0.1729, "Outside_X_Index": 0.0165, "Edges_X_Index": 0.162, "Edges_Y_Index": 0.8808,
+                "Outside_Global_Index": 1.0, "LogOfAreas": 3.0245, "Log_X_Index": 1.3617, "Log_Y_Index": 2.1239,
+                "Orientation_Index": 0.8271, "Luminosity_Index": -0.0228, "SigmoidOfAreas": 1.0
+            },
+            {
+                "X_Minimum": 614, "X_Maximum": 622, "Y_Minimum": 2215716, "Y_Maximum": 2215730, "Pixels_Areas": 68,
+                "X_Perimeter": 13, "Y_Perimeter": 14, "Sum_of_Luminosity": 7990, "Minimum_of_Luminosity": 109,
+                "Maximum_of_Luminosity": 133, "Length_of_Conveyer": 1364, "TypeOfSteel_A300": 0,
+                "TypeOfSteel_A400": 1, "Steel_Plate_Thickness": 100, "Edges_Index": 0.9003, "Empty_Index": 0.3929,
+                "Square_Index": 0.5714, "Outside_X_Index": 0.0059, "Edges_X_Index": 0.6154, "Edges_Y_Index": 1.0,
+                "Outside_Global_Index": 1.0, "LogOfAreas": 1.8325, "Log_X_Index": 0.9031, "Log_Y_Index": 1.1461,
+                "Orientation_Index": 0.4286, "Luminosity_Index": -0.082, "SigmoidOfAreas": 0.2195
+            },
+            {
+                "X_Minimum": 1031, "X_Maximum": 1045, "Y_Minimum": 621518, "Y_Maximum": 621530, "Pixels_Areas": 115,
+                "X_Perimeter": 15, "Y_Perimeter": 12, "Sum_of_Luminosity": 11562, "Minimum_of_Luminosity": 68,
+                "Maximum_of_Luminosity": 127, "Length_of_Conveyer": 1688, "TypeOfSteel_A300": 1,
+                "TypeOfSteel_A400": 0, "Steel_Plate_Thickness": 70, "Edges_Index": 0.7618, "Empty_Index": 0.3155,
+                "Square_Index": 0.8571, "Outside_X_Index": 0.0083, "Edges_X_Index": 0.9333, "Edges_Y_Index": 1.0,
+                "Outside_Global_Index": 0.0, "LogOfAreas": 2.0607, "Log_X_Index": 1.1461, "Log_Y_Index": 1.0792,
+                "Orientation_Index": -0.1429, "Luminosity_Index": -0.2145, "SigmoidOfAreas": 0.2901
+            }
+        ];
+
+        // Fetch Metrics & Setup on load
+        async function fetchModelData() {
+            try {
+                const response = await fetch('/api/metrics');
+                metrics = await response.json();
+                
+                featureNames = metrics.feature_names;
+                classNames = metrics.class_names;
+                
+                populateSummaryDashboard();
+                populateFeaturesInputs();
+                populateConfusionMatrix();
+                
+                // Initialize input with first sample
+                loadSample(0);
+            } catch (err) {
+                console.error("Failed to load model metrics", err);
+            }
+        }
+
+        function populateSummaryDashboard() {
+            document.getElementById("val-train-acc").innerText = (metrics.train_accuracy * 100).toFixed(2) + "%";
+            document.getElementById("val-test-acc").innerText = (metrics.test_accuracy * 100).toFixed(2) + "%";
+            document.getElementById("val-cv-score").innerText = (metrics.cv_mean * 100).toFixed(2) + "% ± " + (metrics.cv_std * 100).toFixed(2) + "%";
+            document.getElementById("val-unseen-acc").innerText = (metrics.unseen_accuracy * 100).toFixed(2) + "%";
+            document.getElementById("unseen-acc-sidebar").innerText = (metrics.unseen_accuracy * 100).toFixed(2) + "%";
+            
+            // Build Classification Report Table
+            const tbody = document.querySelector("#report-table tbody");
+            tbody.innerHTML = "";
+            
+            for (const cls of classNames) {
+                const rep = metrics.classification_report[cls];
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td style="font-weight: 600; color: #ffffff;">${cls}</td>
+                    <td>${rep.precision.toFixed(4)}</td>
+                    <td>${rep.recall.toFixed(4)}</td>
+                    <td>${rep['f1-score'].toFixed(4)}</td>
+                    <td>${rep.support}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+            
+            // Add macro avg and weighted avg row
+            const avg_metrics = ["macro avg", "weighted avg"];
+            for (const avg of avg_metrics) {
+                const rep = metrics.classification_report[avg];
+                const tr = document.createElement("tr");
+                tr.style.background = "rgba(255,255,255,0.03)";
+                tr.style.fontWeight = "bold";
+                tr.innerHTML = `
+                    <td style="color: var(--accent-cyan);">${avg}</td>
+                    <td>${rep.precision.toFixed(4)}</td>
+                    <td>${rep.recall.toFixed(4)}</td>
+                    <td>${rep['f1-score'].toFixed(4)}</td>
+                    <td>${rep.support}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function populateConfusionMatrix() {
+            const container = document.getElementById("confusion-matrix-grid");
+            container.innerHTML = "";
+            
+            // Header Row: corner + classes
+            const corner = document.createElement("div");
+            corner.className = "matrix-header-cell";
+            corner.innerText = "Act\\Pred";
+            container.appendChild(corner);
+            
+            for (const cls of classNames) {
+                const head = document.createElement("div");
+                head.className = "matrix-header-cell";
+                head.innerText = cls.replace("_Faults", "").replace("_Scatch", "").replace("Scratch", "");
+                container.appendChild(head);
+            }
+            
+            // Matrix cells
+            const cm = metrics.confusion_matrix;
+            
+            for (let i = 0; i < classNames.length; i++) {
+                // Row header
+                const rowHead = document.createElement("div");
+                rowHead.className = "matrix-side-header";
+                rowHead.innerText = classNames[i].replace("_Faults", "").replace("_Scatch", "").replace("Scratch", "");
+                container.appendChild(rowHead);
+                
+                // Row cells
+                for (let j = 0; j < classNames.length; j++) {
+                    const cell = document.createElement("div");
+                    cell.className = "matrix-cell";
+                    const val = cm[i][j];
+                    cell.innerText = val;
+                    
+                    // Highlight strength relative to diagonal
+                    if (i === j) {
+                        cell.style.background = `rgba(82, 113, 255, ${Math.min(0.2 + val / 150, 0.95)})`;
+                        cell.style.color = "#ffffff";
+                        cell.style.border = "1px solid rgba(82,113,255,0.4)";
+                    } else {
+                        if (val > 0) {
+                            cell.style.background = `rgba(255, 56, 96, ${Math.min(0.1 + val / 30, 0.6)})`;
+                            cell.style.color = "#ff8fa3";
+                        } else {
+                            cell.style.color = "rgba(255, 255, 255, 0.15)";
+                        }
+                    }
+                    container.appendChild(cell);
+                }
+            }
+        }
+
+        function populateFeaturesInputs() {
+            const form = document.getElementById("features-form-container");
+            form.innerHTML = "";
+            
+            featureNames.forEach(name => {
+                const group = document.createElement("div");
+                group.className = "form-group";
+                
+                // Formulate placeholder / default label description
+                let labelText = name.replace(/_/g, ' ');
+                
+                // Check if binary categories
+                if (name.startsWith("TypeOfSteel_")) {
+                    group.innerHTML = `
+                        <label for="input-${name}">${labelText}</label>
+                        <select id="input-${name}">
+                            <option value="0">0 (No)</option>
+                            <option value="1">1 (Yes)</option>
+                        </select>
+                    `;
+                } else {
+                    group.innerHTML = `
+                        <label for="input-${name}">${labelText}</label>
+                        <input type="number" id="input-${name}" step="any" required>
+                    `;
+                }
+                form.appendChild(group);
+            });
+        }
+
+        function loadSample(index) {
+            const record = sampleRecords[index];
+            if (!record) return;
+            
+            featureNames.forEach(name => {
+                const elem = document.getElementById(`input-${name}`);
+                if (elem) elem.value = record[name];
+            });
+        }
+
+        function resetForm() {
+            featureNames.forEach(name => {
+                const elem = document.getElementById(`input-${name}`);
+                if (elem) elem.value = "";
+            });
+            document.getElementById("prediction-result-panel").style.display = "none";
+        }
+
+        async function handleSinglePredict(e) {
+            e.preventDefault();
+            
+            // Build payload
+            const payload = {};
+            featureNames.forEach(name => {
+                const val = parseFloat(document.getElementById(`input-${name}`).value);
+                payload[name] = isNaN(val) ? 0 : val;
+            });
+            
+            try {
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) throw new Error("API invocation failed.");
+                
+                const data = await response.json();
+                renderSingleResult(data);
+            } catch (err) {
+                alert("Inference Error: " + err.message);
+            }
+        }
+
+        function renderSingleResult(data) {
+            const panel = document.getElementById("prediction-result-panel");
+            panel.style.display = "block";
+            
+            // Set prediction label and confidence
+            const predClass = data.prediction;
+            const predConf = (data.probabilities[predClass] * 100).toFixed(2) + "%";
+            
+            document.getElementById("outcome-label").innerText = predClass;
+            document.getElementById("outcome-confidence").innerText = predConf;
+            
+            // Render probabilities bars
+            const barContainer = document.getElementById("probability-distribution-bars");
+            barContainer.innerHTML = "";
+            
+            // Sort probabilities descending
+            const sortedProbs = Object.entries(data.probabilities).sort((a, b) => b[1] - a[1]);
+            
+            sortedProbs.forEach(([cls, prob]) => {
+                const pct = (prob * 100).toFixed(1) + "%";
+                const isWinner = cls === predClass;
+                
+                const card = document.createElement("div");
+                card.className = "prob-bar-container";
+                card.innerHTML = `
+                    <div class="prob-bar-lbl">
+                        <span style="${isWinner ? 'font-weight: 700; color: var(--accent-cyan);' : ''}">${cls}</span>
+                        <span style="${isWinner ? 'font-weight: 700; color: var(--accent-cyan);' : ''}">${pct}</span>
+                    </div>
+                    <div class="prob-bar-track">
+                        <div class="prob-bar-fill" style="width: ${prob*100}%; background: ${isWinner ? 'linear-gradient(90deg, var(--accent-cyan), var(--primary))' : 'rgba(255,255,255,0.1)'}"></div>
+                    </div>
+                `;
+                barContainer.appendChild(card);
+            });
+            
+            // Scroll to view result smoothly
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Dropzone & Batch logic
+        const dropZone = document.getElementById("drop-zone");
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                dropZone.style.borderColor = "var(--primary)";
+                dropZone.style.background = "rgba(82, 113, 255, 0.05)";
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                dropZone.style.borderColor = "rgba(255, 255, 255, 0.15)";
+                dropZone.style.background = "rgba(255, 255, 255, 0.01)";
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', e => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length) uploadBatchFile(files[0]);
+        });
+
+        function handleBatchFileSelect(e) {
+            const files = e.target.files;
+            if (files.length) uploadBatchFile(files[0]);
+        }
+
+        async function uploadBatchFile(file) {
+            const formData = new FormData();
+            formData.append("file", file);
+            
+            try {
+                const response = await fetch('/api/predict-batch', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const errDetail = await response.json();
+                    throw new Error(errDetail.detail || "API invocation failed.");
+                }
+                
+                const data = await response.json();
+                batchResults = data.predictions;
+                renderBatchResults();
+            } catch (err) {
+                alert("Batch Processing Error: " + err.message);
+            }
+        }
+
+        function renderBatchResults() {
+            document.getElementById("batch-results-summary").style.display = "block";
+            document.getElementById("batch-count").innerText = batchResults.length;
+            
+            // Build headers dynamically
+            const thead = document.querySelector("#batch-results-table thead");
+            thead.innerHTML = "";
+            const headerRow = document.createElement("tr");
+            
+            const thPred = document.createElement("th");
+            thPred.innerText = "Prediction";
+            headerRow.appendChild(thPred);
+            
+            const thConf = document.createElement("th");
+            thConf.innerText = "Confidence";
+            headerRow.appendChild(thConf);
+            
+            featureNames.forEach(col => {
+                const thCol = document.createElement("th");
+                thCol.innerText = col.replace(/_/g, ' ');
+                headerRow.appendChild(thCol);
+            });
+            thead.appendChild(headerRow);
+            
+            // Build body dynamically
+            const tbody = document.querySelector("#batch-results-table tbody");
+            tbody.innerHTML = "";
+            
+            let matchedCount = 0;
+            let hasActualLabels = false;
+            
+            batchResults.forEach(res => {
+                const tr = document.createElement("tr");
+                const isCorrect = res.actual === res.prediction;
+                if (res.actual && res.actual !== 'null') {
+                    hasActualLabels = true;
+                    if (isCorrect) matchedCount++;
+                }
+                
+                let rowHTML = `
+                    <td style="font-weight: 700; color: var(--accent-cyan);">${res.prediction}</td>
+                    <td style="font-weight: 600; color: var(--accent-green);">${(res.confidence * 100).toFixed(1)}%</td>
+                `;
+                
+                featureNames.forEach(col => {
+                    const val = res.features[col];
+                    const formattedVal = (typeof val === 'number') ? val.toFixed(2) : val;
+                    rowHTML += `<td>${formattedVal}</td>`;
+                });
+                
+                tr.innerHTML = rowHTML;
+                tbody.appendChild(tr);
+            });
+            
+            // Show stats box if actual labels are present
+            const statsBox = document.getElementById("batch-stats-box");
+            if (hasActualLabels && batchResults.length > 0) {
+                statsBox.style.display = "block";
+                const accuracy = (matchedCount / batchResults.length) * 100;
+                document.getElementById("batch-accuracy-val").innerText = accuracy.toFixed(2) + "%";
+            } else {
+                statsBox.style.display = "none";
+            }
+        }
+
+        function exportBatchCSV() {
+            if (!batchResults.length) return;
+            
+            const escapeCsv = value => {
+                const text = value === null || value === undefined ? "" : String(value);
+                return `"${text.replace(/"/g, '""')}"`;
+            };
+            
+            const originalHeaders = batchResults[0].original_row ? Object.keys(batchResults[0].original_row) : [];
+            const headers = originalHeaders.length > 0 ? [...originalHeaders, "Predicted_Label", "Confidence_Score"] : ["Predicted_Label", "Confidence_Score"];
+            const csvRows = [headers.map(escapeCsv).join(",")];
+            
+            batchResults.forEach(res => {
+                const row = [];
+                if (originalHeaders.length > 0) {
+                    originalHeaders.forEach(col => row.push(escapeCsv(res.original_row[col])));
+                }
+                row.push(escapeCsv(res.prediction));
+                row.push(escapeCsv(res.confidence.toFixed(4)));
+                csvRows.push(row.join(","));
+            });
+            
+            const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "steel_fault_predictions.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Tab Switching Logic
+        function switchMainTab(tabId) {
+            // Update sidebar buttons
+            const buttons = document.querySelectorAll(".sidebar-menu-btn");
+            buttons.forEach(btn => btn.classList.remove("active"));
+            
+            // Match click trigger
+            const targetBtn = Array.from(buttons).find(btn => btn.onclick.toString().includes(tabId));
+            if (targetBtn) targetBtn.classList.add("active");
+            
+            // Toggle panels
+            const contents = document.querySelectorAll(".tab-content");
+            contents.forEach(c => c.classList.remove("active"));
+            document.getElementById(`tab-${tabId}`).classList.add("active");
+        }
+
+        function switchPerformanceTab(event, targetId) {
+            // Update buttons
+            const tabs = event.target.parentElement.querySelectorAll(".tab-btn");
+            tabs.forEach(t => t.classList.remove("active"));
+            event.target.classList.add("active");
+            
+            // Update contents
+            const contents = document.querySelectorAll(".perf-tab-content");
+            contents.forEach(c => c.style.display = "none");
+            document.getElementById(targetId).style.display = "block";
+        }
+
+        // Load data on page load
+        window.addEventListener('DOMContentLoaded', fetchModelData);
+    </script>
+</body>
+</html>
