@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  
+  --color-appBg: #0b0f19;
+  --color-panelBg: #121827;
+  --color-panelBorder: rgba(255, 255, 255, 0.05);
+  
+  --color-textPrimary: #f8fafc;
+  --color-textMuted: #8b9bb4;
+  
+  --color-brandBlue: #3b82f6;
+  --color-brandPurple: #8b5cf6;
+  --color-brandGreen: #10b981;
+}
+
+body {
+  background-color: var(--color-appBg);
+  color: var(--color-textPrimary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+
+/* Utility Classes */
+@layer utilities {
+  .panel {
+    @apply bg-panelBg border border-panelBorder rounded-xl p-6 transition-all duration-300 relative overflow-hidden;
+  }
+  .panel-glow:hover {
+    @apply border-brandBlue/30 shadow-[0_0_20px_rgba(59,130,246,0.1)] -translate-y-0.5;
+  }
+  .badge {
+    @apply inline-flex items-center px-2 py-1 rounded text-[0.65rem] font-bold uppercase tracking-wider;
+  }
+  .badge-blue { @apply bg-blue-500/10 text-blue-500 border border-blue-500/20; }
+  .badge-purple { @apply bg-purple-500/10 text-purple-500 border border-purple-500/20; }
+  .badge-green { @apply bg-green-500/10 text-green-500 border border-green-500/20; }
+}

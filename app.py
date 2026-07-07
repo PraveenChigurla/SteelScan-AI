@@ -105,6 +105,11 @@ async def predict_batch(file: UploadFile = File(...)):
     elif "Fault" in df_batch.columns:
         target_col = "Fault"
     
+    # Map columns to match expected feature names ignoring case
+    col_map = {c.lower(): c for c in df_batch.columns}
+    rename_map = {col_map.get(f.lower(), f): f for f in feature_names}
+    df_batch = df_batch.rename(columns=rename_map)
+
     # Filter features based on model feature names
     missing_cols = [col for col in feature_names if col not in df_batch.columns]
     if missing_cols:

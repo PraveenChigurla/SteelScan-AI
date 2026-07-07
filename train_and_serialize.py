@@ -6,9 +6,9 @@ import os
 from lightgbm import LGBMClassifier
 from sklearn.metrics import (
     accuracy_score, classification_report, confusion_matrix,
-    roc_auc_score, precision_score, recall_score, f1_score
+    roc_auc_score, precision_score, recall_score, f1_score, roc_curve
 )
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, label_binarize
 from sklearn.model_selection import train_test_split, cross_val_score
 
 # Define file paths
@@ -104,6 +104,48 @@ with open("model.pkl", "wb") as f:
 with open("label_encoder.pkl", "wb") as f:
     pickle.dump(le, f)
 
+import scipy.stats as stats
+
+feature_stats_dict = {}
+for col in X.columns:
+    col_data = X[col].dropna()
+    mean_val = float(col_data.mean())
+    std_val = float(col_data.std())
+    min_val = float(col_data.min())
+    max_val = float(col_data.max())
+    
+    # Histogram and KDE
+    counts, bins = np.histogram(col_data, bins=20)
+    bin_centers = bins[:-1] + np.diff(bins) / 2
+    try:
+        kde_func = stats.gaussian_kde(col_data)
+        kde_vals = kde_func(bin_centers)
+        # Normalize KDE to match histogram counts scale roughly for dual-axis plotting
+        kde_vals = kde_vals * len(col_data) * np.diff(bins)[0]
+    except Exception:
+        kde_vals = np.zeros_like(counts)
+        
+    hist_data = [
+        {
+            "bin": round(float(bin_centers[i]), 4),
+            "count": int(counts[i]),
+            "kde": round(float(kde_vals[i]), 4)
+        }
+        for i in range(len(counts))
+    ]
+    
+    feature_stats_dict[col] = {
+        "mean": mean_val,
+        "median": float(col_data.median()),
+        "std": std_val,
+        "min": min_val,
+        "max": max_val,
+        "skewness": float(col_data.skew()),
+        "q25": float(col_data.quantile(0.25)),
+        "q75": float(col_data.quantile(0.75)),
+        "hist_data": hist_data
+    }
+
 # Prepare metrics dictionary for the UI dashboard
 metrics_data = {
     "train_accuracy": float(train_acc),
@@ -119,7 +161,25 @@ metrics_data = {
     "class_names": list(le.classes_),
     "confusion_matrix": conf_matrix.tolist(),
     "classification_report": class_report,
-    "unseen_classification_report": unseen_class_report
+    "unseen_classification_report": unseen_class_report,
+    "feature_importances": {
+        name: float(imp)
+        for name, imp in zip(X.columns, lgbm_model.feature_importances_)
+    },
+    "feature_stats": feature_stats_dict,
+    "roc_curves": {
+        cls_name: dict(zip(
+            ["fpr", "tpr"],
+            [
+                [round(v, 4) for v in arr]
+                for arr in roc_curve(
+                    label_binarize(y_test, classes=le.classes_)[:, i],
+                    y_prob[:, i]
+                )[:2]
+            ]
+        ))
+        for i, cls_name in enumerate(le.classes_)
+    }
 }
 
 with open("metrics.json", "w") as f:
