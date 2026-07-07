@@ -1,9 +1,8 @@
-fastapi
-uvicorn[standard]
-pandas
-numpy
-scikit-learn
-lightgbm
-gunicorn
-python-multipart
-pydantic
+fastapi==0.111.0
+uvicorn==0.30.1
+pandas==2.2.2
+numpy==1.26.4
+scikit-learn==1.4.2
+lightgbm==4.3.0
+scipy==1.13.1
+pydantic==2.7.4
