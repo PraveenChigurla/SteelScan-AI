@@ -114,9 +114,9 @@ export default function DatasetPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-panelBorder">
-              {[...Array(5)].map((_, i) => (
+              {[...Array(5)].map((_: any, i: number) => (
                 <tr key={i} className="hover:bg-white/5 transition-colors cursor-pointer">
-                  {featureList.map((_, j) => (
+                  {featureList.map((_: any, j: number) => (
                     <td key={j} className="p-3 text-slate-300 font-mono">
                       {((i + 1) * (j + 2) * 11.7 % 200).toFixed(1)}
                     </td>
