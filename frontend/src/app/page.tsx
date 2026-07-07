@@ -236,7 +236,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-2"><BarChart2 className="w-4 h-4 text-brandBlue"/><div className="text-slate-500">Test Samples <span className="text-slate-300 font-bold ml-1">583 (30%)</span></div></div>
         <div className="flex items-center gap-2"><Database className="w-4 h-4 text-brandPurple"/><div className="text-slate-500">Dataset Size <span className="text-slate-300 font-bold ml-1">1,941 Samples</span></div></div>
         <div className="flex items-center gap-2"><Clock className="w-4 h-4 text-brandBlue"/><div className="text-slate-500">Last Updated <span className="text-slate-300 font-bold ml-1">8/7/2026</span></div></div>
-        <div className="flex items-center gap-2"><Crosshair className="w-4 h-4 text-brandPurple"/><div className="text-slate-500">Developers <span className="text-slate-300 font-bold ml-1">Praveen, Kkushi</span></div></div>
+        <div className="flex items-center gap-2"><Crosshair className="w-4 h-4 text-brandPurple"/><div className="text-slate-500">Developers <span className="text-slate-300 font-bold ml-1">Praveen, Khushi</span></div></div>
       </motion.div>
 
     </motion.div>

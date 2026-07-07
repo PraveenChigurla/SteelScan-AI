@@ -85,7 +85,7 @@ export default function Sidebar() {
             </div>
             <div>
               <p className="text-[0.65rem] text-slate-500 uppercase">Developers</p>
-              <p className="text-xs text-slate-300">Praveen, Kkushi</p>
+              <p className="text-xs text-slate-300">Praveen, Khushi</p>
             </div>
             <div>
               <p className="text-[0.65rem] text-slate-500 uppercase">Last Updated</p>

@@ -86,7 +86,7 @@ python train_and_serialize.py
 Start the FastAPI backend server:
 ```bash
 # Runs on http://127.0.0.1:8000
-python app.py
+uvicorn app:app --reload
 ```
 
 ### 3. Setup the Next.js Frontend
@@ -117,4 +117,4 @@ npm run dev
 ## 🧑‍💻 Developers
 
 *   **Praveen** - [GitHub Profile](https://github.com/PraveenChigurla?tab=repositories)
-*   **Kkushi**
+*   **Khushi**
