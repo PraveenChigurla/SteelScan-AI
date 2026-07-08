@@ -41,7 +41,7 @@ export default function DatasetPage() {
         <div className="panel p-4"><p className="text-[0.65rem] text-textMuted uppercase mb-1">Target Classes</p><p className="text-xl font-bold text-white">7</p></div>
         <div className="panel p-4"><p className="text-[0.65rem] text-textMuted uppercase mb-1">Missing Values</p><p className="text-xl font-bold text-brandGreen">0</p></div>
         <div className="panel p-4"><p className="text-[0.65rem] text-textMuted uppercase mb-1">Numerical Feat.</p><p className="text-xl font-bold text-white">100%</p></div>
-        <div className="panel p-4"><p className="text-[0.65rem] text-textMuted uppercase mb-1">Train/Test Split</p><p className="text-xl font-bold text-brandBlue">80 / 20</p></div>
+        <div className="panel p-4"><p className="text-[0.65rem] text-textMuted uppercase mb-1">Train/Test Split</p><p className="text-xl font-bold text-brandBlue">70 / 30</p></div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
