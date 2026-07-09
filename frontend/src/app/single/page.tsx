@@ -71,7 +71,10 @@ export default function SinglePredictionPage() {
                   onClick={() => loadSample(i)} 
                   className="bg-[#121827] border border-panelBorder text-cyan-400 hover:bg-brandBlue/10 hover:border-brandBlue/30 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors"
                 >
-                  Sample {i+1} ({s.label})
+                  <div className="flex flex-col items-center whitespace-nowrap leading-tight">
+                    <span>Sample {i+1}</span>
+                    <span className="text-[10px] opacity-80 mt-0.5">({s.label})</span>
+                  </div>
                 </button>
               ))}
             </div>
