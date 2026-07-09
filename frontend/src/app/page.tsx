@@ -71,7 +71,7 @@ export default function Dashboard() {
       {/* METRICS ROW */}
       <motion.div variants={itemVars} className="grid grid-cols-4 gap-4">
         {[
-          { title: "Train Accuracy", value: "100.00%", icon: TrendingUp, color: "text-brandGreen", border: "border-b-brandGreen" },
+          { title: "ROC-AUC Score", value: "96.69%", icon: TrendingUp, color: "text-brandGreen", border: "border-b-brandGreen" },
           { title: "Test Accuracy", value: "82.85%", icon: Activity, color: "text-brandBlue", border: "border-b-brandBlue" },
           { title: "CV Score (5-Fold)", value: "79.97%", icon: Crosshair, color: "text-brandPurple", border: "border-b-brandPurple" },
           { title: "Unseen Accuracy", value: "83.55%", icon: Target, color: "text-cyan-400", border: "border-b-cyan-400" }
