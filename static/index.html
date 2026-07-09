@@ -464,7 +464,8 @@
                         <div class="panel panel-glow hidden border-t-4 border-t-green-500 bg-gradient-to-b from-green-900/10 to-transparent" id="res-filled">
                             <span class="badge badge-green mb-4">Complete</span>
                             <p class="text-xs text-textMuted uppercase">Detected Fault Type</p>
-                            <h3 class="text-3xl font-bold text-white mb-6" id="res-class">-</h3>
+                            <h3 class="text-3xl font-bold text-white mb-4" id="res-class">-</h3>
+                            <div class="mb-6 flex justify-center"><img id="res-img" src="" alt="Fault Type" class="rounded-lg border border-panelBorder shadow-lg max-h-[150px] object-cover"></div>
                             <div class="bg-appBg border border-panelBorder p-4 rounded-lg mb-6 shadow-inner"><p class="text-xs text-textMuted">Confidence</p><p class="text-2xl font-bold text-green-400" id="res-conf">-</p></div>
                             <p class="text-xs text-textMuted uppercase mb-2">Recommendation</p>
                             <p class="text-sm text-slate-300 border-l-2 border-blue-500 pl-3">Isolate plate for inspection.</p>
@@ -651,6 +652,9 @@
                 const data = await res.json();
                 document.getElementById('res-empty').classList.add('hidden'); document.getElementById('res-filled').classList.remove('hidden');
                 document.getElementById('res-class').innerText = data.prediction; document.getElementById('res-conf').innerText = `${(Math.max(...Object.values(data.probabilities))*100).toFixed(1)}%`;
+                
+                const imgMap = { "Bumps": "Bumps.png", "Dirtiness": "Dirtiness.png", "K_Scatch": "K_scratch.png", "Other_Faults": "Other.png", "Pastry": "Pastry.png", "Stains": "stain.png", "Z_Scratch": "Z_scratch.png" };
+                document.getElementById('res-img').src = `/fault-images/${imgMap[data.prediction] || 'Other.png'}`;
             } catch(e) {}
         }
     </script>

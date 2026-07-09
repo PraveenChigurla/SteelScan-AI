@@ -107,8 +107,16 @@ export default function SinglePredictionPage() {
             <div className="panel border-t-4 border-t-brandGreen bg-gradient-to-b from-brandGreen/10 to-transparent">
               <span className="badge badge-green mb-6">Complete</span>
               <p className="text-[10px] text-textMuted uppercase tracking-wider mb-1">Detected Fault Type</p>
-              <h3 className="text-4xl font-extrabold text-white mb-8">{result.prediction}</h3>
+              <h3 className="text-4xl font-extrabold text-white mb-4">{result.prediction}</h3>
               
+              <div className="mb-6 flex justify-center">
+                <img 
+                  src={`/fault-images/${{"Bumps": "Bumps.png", "Dirtiness": "Dirtiness.png", "K_Scatch": "K_scratch.png", "Other_Faults": "Other.png", "Pastry": "Pastry.png", "Stains": "stain.png", "Z_Scratch": "Z_scratch.png"}[result.prediction as string] || 'Other.png'}`} 
+                  alt={result.prediction} 
+                  className="rounded-xl border border-panelBorder shadow-lg max-h-[180px] object-cover"
+                />
+              </div>
+
               <div className="bg-[#0b0f19] border border-panelBorder p-4 rounded-xl mb-6 shadow-inner">
                 <p className="text-[10px] text-textMuted uppercase mb-1">Confidence Score</p>
                 <p className="text-3xl font-bold text-brandGreen">

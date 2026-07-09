@@ -166,3 +166,4 @@ async def predict_batch(file: UploadFile = File(...)):
 
 # Mount static files (optional fallback, FastAPI serves root explicitly above)
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/fault-images", StaticFiles(directory="Fault-images"), name="fault_images")

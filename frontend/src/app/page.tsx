@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   TrendingUp, Activity, Crosshair, Target, Brain, Moon, Code2,
@@ -31,6 +32,9 @@ const categoryImportanceData = [
 ];
 
 export default function Dashboard() {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
+
   const containerVars: any = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -39,6 +43,8 @@ export default function Dashboard() {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   };
+
+  if (!isMounted) return null;
 
   return (
     <motion.div variants={containerVars} initial="hidden" animate="show" className="flex flex-col gap-6">
