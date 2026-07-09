@@ -13,7 +13,7 @@ export default function AboutPage() {
       </div>
 
       <div className="panel p-8">
-        <h3 className="text-2xl font-bold text-white mb-4">Steel Plate Fault Classifier</h3>
+        <h3 className="text-2xl font-bold text-white mb-4">SteelScan AI</h3>
         <p className="text-sm text-slate-300 leading-relaxed mb-6">
           This platform was built to demonstrate an end-to-end Machine Learning pipeline, from Exploratory Data Analysis to model deployment.
           It emphasizes not just raw algorithmic performance, but also <strong>Information Architecture</strong> and <strong>User Experience</strong>.

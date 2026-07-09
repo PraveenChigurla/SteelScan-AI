@@ -54,7 +54,7 @@ export default function Dashboard() {
         <div>
           <p className="text-sm font-medium text-slate-300 mb-1">Welcome back, Praveen 👋</p>
           <h1 className="text-4xl font-extrabold text-white tracking-tight">
-            Steel Plate Fault <span className="text-transparent bg-clip-text bg-gradient-to-r from-brandBlue to-brandPurple">Classifier</span>
+            SteelScan <span className="text-transparent bg-clip-text bg-gradient-to-r from-brandBlue to-brandPurple">AI</span>
           </h1>
           <p className="text-sm text-textMuted mt-1">AI-Powered Defect Detection for Steel Manufacturing</p>
         </div>

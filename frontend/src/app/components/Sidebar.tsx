@@ -31,7 +31,7 @@ export default function Sidebar() {
             <Hexagon className="text-white w-6 h-6 fill-white/20" />
           </div>
           <div>
-            <h1 className="font-bold text-white tracking-tight text-lg leading-tight">Steel Faults</h1>
+            <h1 className="font-bold text-white tracking-tight text-lg leading-tight">SteelScan AI</h1>
             <p className="text-xs text-brandPurple">Classifier</p>
           </div>
         </div>

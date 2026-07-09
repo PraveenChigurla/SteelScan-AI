@@ -11,7 +11,7 @@ export default function DocsPage() {
           <Book className="w-8 h-8 text-brandBlue" /> Platform Documentation
         </h2>
         <p className="text-textMuted max-w-3xl leading-relaxed">
-          Technical specifications for the Steel Faults AI Classifier.
+          Technical specifications for the SteelScan AI platform.
         </p>
       </div>
 

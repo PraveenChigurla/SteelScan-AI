@@ -9,7 +9,7 @@ import json
 import io
 import os
 
-app = FastAPI(title="Steel Plate Faults Predictor")
+app = FastAPI(title="SteelScan AI")
 
 # Ensure static directory exists
 os.makedirs("static", exist_ok=True)

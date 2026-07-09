@@ -1,6 +1,6 @@
-# Steel Plate Fault Classifier 🧠⚙️
+# SteelScan AI 🧠⚙️
 
-**Steel Plate Fault Classifier** is an end-to-end Machine Learning web application designed to detect and classify manufacturing defects in steel plates. The platform offers a sleek, modern, enterprise-level UI that provides real-time inference, batch predictions, comprehensive exploratory data analysis (EDA), and interactive model performance metrics.
+**SteelScan AI** is an end-to-end Machine Learning web application designed to detect and classify manufacturing defects in steel plates. The platform offers a sleek, modern, enterprise-level UI that provides real-time inference, batch predictions, comprehensive exploratory data analysis (EDA), and interactive model performance metrics.
 
 ---
 
