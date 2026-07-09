@@ -117,4 +117,4 @@ npm run dev
 ## 🧑‍💻 Developers
 
 *   **Praveen** - [GitHub Profile](https://github.com/PraveenChigurla?tab=repositories)
-*   **Khushi**
+*   **Khushi** - [GitHub Profile](https://github.com/KhushiKore?tab=repositories)
