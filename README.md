@@ -112,6 +112,41 @@ npm run dev
 *   **Validation:** 5-Fold Cross Validation
 *   **Data Imbalance:** Addressed natively by LightGBM parameter configuration (`is_unbalance=True`)
 
+### 🔍 Fault Types
+
+The model classifies defects into 7 distinct categories. Below are reference images for each fault type:
+
+<p align="center">
+  <figure style="display: inline-block; margin: 10px; text-align: center;">
+    <img src="Fault-images/Bumps.png" width="150" alt="Bumps">
+    <figcaption>Bumps</figcaption>
+  </figure>
+  <figure style="display: inline-block; margin: 10px; text-align: center;">
+    <img src="Fault-images/Dirtiness.png" width="150" alt="Dirtiness">
+    <figcaption>Dirtiness</figcaption>
+  </figure>
+  <figure style="display: inline-block; margin: 10px; text-align: center;">
+    <img src="Fault-images/K_scratch.png" width="150" alt="K_Scatch">
+    <figcaption>K_Scatch</figcaption>
+  </figure>
+  <figure style="display: inline-block; margin: 10px; text-align: center;">
+    <img src="Fault-images/Pastry.png" width="150" alt="Pastry">
+    <figcaption>Pastry</figcaption>
+  </figure>
+  <figure style="display: inline-block; margin: 10px; text-align: center;">
+    <img src="Fault-images/stain.png" width="150" alt="Stains">
+    <figcaption>Stains</figcaption>
+  </figure>
+  <figure style="display: inline-block; margin: 10px; text-align: center;">
+    <img src="Fault-images/Z_scratch.png" width="150" alt="Z_Scratch">
+    <figcaption>Z_Scratch</figcaption>
+  </figure>
+  <figure style="display: inline-block; margin: 10px; text-align: center;">
+    <img src="Fault-images/Other.png" width="150" alt="Other_Faults">
+    <figcaption>Other_Faults</figcaption>
+  </figure>
+</p>
+
 ---
 
 ## 🧑‍💻 Developers
