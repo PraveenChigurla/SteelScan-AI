@@ -4,6 +4,14 @@
 
 ---
 
+## 🌐 Live Demo
+
+You can try out the live platform hosted on Render:
+*   **Frontend UI:** [https://steel-fault-classifier-frontend.onrender.com](https://steel-fault-classifier-frontend.onrender.com)
+*   **Backend API:** [https://steel-fault-classifier.onrender.com](https://steel-fault-classifier.onrender.com)
+
+---
+
 ## 🚀 Key Features
 
 *   **Inference Studio (Single Prediction):** Input feature values manually to instantly classify a steel fault using the LightGBM model. Includes verified sample data loading for quick testing.
